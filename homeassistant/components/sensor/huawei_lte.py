@@ -127,8 +127,11 @@ def format_default(value):
     unit = None
     if value is not None:
         # Clean up value and infer unit, e.g. -71dBm, 15 dB
+        # if rssi is above -51dBm, the returned string is '>=-51dBm'
+        # and the regex fails. Idem for very low values: <=-xxx
+        # In both cases return the limit
         match = re.match(
-            r"(?P<value>.+?)\s*(?P<unit>[a-zA-Z]+)\s*$", str(value))
+            r"([<=>]*)(?P<value>.+?)\s*(?P<unit>[a-zA-Z]+)\s*$", str(value))
         if match:
             try:
                 value = float(match.group("value"))
